@@ -18,5 +18,9 @@
   "bugs": {
     "url": "https://github.com/HelpfulHuman/TupperwareJS/issues"
   },
-  "homepage": "https://github.com/HelpfulHuman/TupperwareJS"
+  "homepage": "https://github.com/HelpfulHuman/TupperwareJS",
+  "devDependencies": {
+    "chai": "^1.10.0",
+    "mocha": "^2.0.1"
+  }
 }
