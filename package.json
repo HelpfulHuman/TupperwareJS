@@ -1,0 +1,22 @@
+{
+  "name": "tupperware",
+  "version": "0.0.1",
+  "description": "An inversion of control system written in Javascript.",
+  "main": "lib/tupperware.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HelpfulHuman/TupperwareJS.git"
+  },
+  "author": "Nick Glenn <nick@helpfulhuman.com> (http://nick-glenn.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/HelpfulHuman/TupperwareJS/issues"
+  },
+  "homepage": "https://github.com/HelpfulHuman/TupperwareJS"
+}
