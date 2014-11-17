@@ -1,6 +1,8 @@
 TupperwareJS
 ============
 
+![Build Status](https://travis-ci.org/HelpfulHuman/TupperwareJS.svg)
+
 TupperwareJS is an "Inversion of Control" system for NodeJS that allows you to bundle application functionality into _"providers"_.
 
 ## Getting Started
