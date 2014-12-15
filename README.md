@@ -1,6 +1,8 @@
 TupperwareJS
 ============
 
+![Build Status](https://travis-ci.org/HelpfulHuman/TupperwareJS.svg)
+
 TupperwareJS is a dependency injection system for NodeJS that can be used in either functional or object-oriented contexts.
 
 ## Getting Started
