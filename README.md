@@ -1,50 +1,191 @@
 TupperwareJS
 ============
 
-TupperwareJS is an "Inversion of Control" system for NodeJS that allows you to bundle application functionality into _"providers"_.
+TupperwareJS is a dependency injection system for NodeJS that can be used in either functional or object-oriented contexts.
 
 ## Getting Started
 
 Install via `npm` using the following command in Terminal:
 
 ```shell
-npm install tupperware
+npm install --save tupperware
 ```
 
-Then create an instance of Tupperware to use throughout your application:
+## Object Usage
 
 ```javascript
-var tupperware = require('tupperware'),
-    app        = new tupperware();
+var tupperware = require('tupperware')
+var container  = tupperware.create()
 ```
 
-Tupperware accepts an `options` object in its constructor.  Options set on the Tupperware instance will be passed to providers when they are being attached.  On top of this, Tupperware also has configuration options of its own that effect its behavior.  These are stored in their own `tupperware` object within the `options` object.
+### set( name [, options], value )
 
-## Providers
-
-A provider is any object that provides Tupperware with instructions and methods for implementation.
-
-Let's create a simple provider that will allow us to output "hello world" to console by calling `app.hello()`.  In order to do this, we can create an object literal consisting of a `name` and `attach` method.  The `name` variable is required if we want to be able to have futures providers depend on this one.  The `attach` method will be invoked when bind or "attach" the provider to our application.
+Adds a new value to your container's registry.
 
 ```javascript
-var helloProvider = {
-  name: 'myApp.hello',
-  attach: function (app, options) {
-    // add hello method
-    app.hello = function () {
-      console.log('hello world');
-    };
+container.set('foo', function () {
+  return 'foo'
+})
+
+container.set('bar', function (foo) {
+  // The `foo` function will be called and injected into
+  // the `bar` function
+  return foo + 'bar'
+})
+```
+
+##### Storing Functions as Values
+
+By default, TupperwareJS stores functions as resolvable factories.  If you want to store a function that will simply be returned (without be called), you can use the `isValue` option to store it as a value.
+
+```javascript
+container.set('foo', { isValue: true}, function () {
+  return 'foo'
+})
+```
+
+##### Explicitly Define Argument Names
+
+If you're planning on doing anything that obscures the argument names for a function (namely, minification), then you'll want to provide the names manually.  You can do this using the `inject` option which should be an array of argument names.
+
+```javascript
+container.set('foo', { inject: ['foo', 'bar'] }, function (a, b) {
+  return a + b
+})
+```
+
+### get( name [, options] )
+
+Resolves a set function's dependencies (and their dependencies) and then returns the value.  It should be noted that stored functions (that are not values) will cache their result and that result will be used for all subsequent requests.
+
+```javascript
+container.get('bar')
+// => `foobar`
+```
+
+##### Factories
+
+One added bonus of TupperwareJS is that any stored value can be returned as a factory object.  Simply suffix the name of the argument with `Factory` and use the `make()` function when creating new instances of the value you are resolving.
+
+```javascript
+container.set('random', function () {
+  return Math.random()
+})
+
+container.inject(function (randomFactory) {
+  var result1 = randomFactory.make() // => 0.2343245345
+  var result2 = randomFactory.make() // => 0.6756572454
+  var result3 = randomFactory.make() // => 0.4521243624
+})
+```
+
+##### Optional Arguments
+
+Sometimes, you might want to make certain arguments optional.  Using the `optional` option allows you to specify an array of argument names that will insert `null` if a specified argument can't be resolved.
+
+```javascript
+var result = container.get('bar', { optional: ['foo'] }, function (foo) {
+  if (!foo) {
+    return 'no foo set yet'
   }
-};
+})
+// => 'no foo set yet'
 ```
 
-In order to use our provider, we will need to attach it to our application using the `attach()` method.  The `attach()` method takes our provider as the first argument.  Additionally, we can also pass along an `options` object and a callback.
+##### Overriding Resolved Values
+
+Coming soon.
+
+### inject( [options, ] fn )
+
+Automatically determines the dependencies of the given function and resolves them without the need of registering the function with the container.
 
 ```javascript
-app.attach(helloProvider);
-
-app.hello(); // Outputs "hello world"
+container.inject(function (bar) {
+  return bar + 'baz'
+})
+// => `foobarbaz`
 ```
 
+### provide( name, [options] )
 
+Packages a container value into a function that can be called / resolve without the `container` object.
 
+```javascript
+var bar = container.provide('bar')
+
+bar()
+// => `foobar`
+```
+
+## Functional Usage
+
+Coming soon.
+
+### register( registry, name, [options, ] value )
+
+Identical to `set()` above, except that a registry object is needed as the
+first argument.
+
+```javascript
+var register = tupperware.register
+var registry = {}
+
+register(registry, 'foo', function () {
+  return 'foo'
+})
+
+registry.foo()
+// => 'foo'
+```
+
+### resolve( registry, name [, options] )
+
+Indentical to `get()` above, except that a registry object is needed as the first argument.
+
+```javascript
+var resolve  = tupperware.resolve
+var registry = { foo: 'bar' }
+
+var foo = resolve(registry, 'foo')
+// => 'bar'
+```
+
+### inject( registry, fn [, options] )
+
+Identical to `inject()` above, except that a registry object is needed as the first argument.
+
+```javascript
+var inject    = tupperware.inject
+var registry  = { name: 'world' }
+
+var result = inject(registry, function (name) {
+  return 'hello' + name
+})
+// => 'hello world'
+```
+
+### provide( registry, name [, options] )
+
+Identical to `provide()` above, except that a registry object is needed as the first argument.
+
+```javascript
+var provide  = tupperware.provide
+var registry = { foo: 'bar' }
+
+var result = provide(registry, 'foo')
+
+result()
+// => 'bar'
+```
+
+### annotate( fn )
+
+Returns an array containing all of the argument names for the given function.
+
+```javascript
+var annotate = tupperware.annotate
+
+var args = annotate(function (foo, bar) {})
+// => ['foo', 'bar']
+```
