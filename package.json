@@ -1,6 +1,6 @@
 {
   "name": "tupperware",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "An inversion of control system written in Javascript.",
   "main": "lib/tupperware.js",
   "directories": {
@@ -24,6 +24,5 @@
     "mocha": "^2.0.1"
   },
   "dependencies": {
-    "underscore": "^1.7.0"
   }
 }
