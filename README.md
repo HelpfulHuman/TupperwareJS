@@ -41,7 +41,7 @@ container.set('bar', function (foo) {
 By default, TupperwareJS stores functions as resolvable factories.  If you want to store a function that will simply be returned (without be called), you can use the `isValue` option to store it as a value.
 
 ```javascript
-container.set('foo', { isValue: true}, function () {
+container.set('foo', { isValue: true }, function () {
   return 'foo'
 })
 ```
